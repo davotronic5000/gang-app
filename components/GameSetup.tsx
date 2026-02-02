@@ -55,6 +55,32 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
                   Unlimited vaults | Random cards stack
                 </div>
               </button>
+              <button
+                onClick={() => setGameMode('professional')}
+                className={`w-full p-4 rounded-lg text-left transition-all ${
+                  gameMode === 'professional'
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-lg shadow-amber-500/50'
+                    : 'bg-white/10 text-amber-100 hover:bg-white/20 border border-amber-500/20'
+                }`}
+              >
+                <div className="font-semibold">Professional Mode</div>
+                <div className="text-sm opacity-90">
+                  Win: 3 vaults | 1 permanent challenge
+                </div>
+              </button>
+              <button
+                onClick={() => setGameMode('master-thief')}
+                className={`w-full p-4 rounded-lg text-left transition-all ${
+                  gameMode === 'master-thief'
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-lg shadow-amber-500/50'
+                    : 'bg-white/10 text-amber-100 hover:bg-white/20 border border-amber-500/20'
+                }`}
+              >
+                <div className="font-semibold">Master Thief Mode</div>
+                <div className="text-sm opacity-90">
+                  Win: 3 vaults | Lose: 2 alarms | No specialists
+                </div>
+              </button>
             </div>
           </div>
 
@@ -132,12 +158,37 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
           <div className="mt-6 p-4 bg-black/40 rounded-lg border border-amber-500/20">
             <h3 className="text-amber-100 font-semibold mb-2">How to Play</h3>
             <ul className="text-sm text-amber-200/70 space-y-1">
-              <li>• Success: Open a vault → draw Challenge card</li>
-              <li>• Failure: Trigger alarm → {specialistCardsEnabled || gameMode === 'standard' ? 'draw Specialist card' : 'no card (hard mode!)'}</li>
-              <li>• Challenge cards add difficulty</li>
-              <li>• Specialist cards provide help</li>
-              <li>• Standard: One card at a time, {randomizeCards ? 'random order' : 'sequential'}</li>
-              <li>• Never Ending: Multiple random cards, no duplicates</li>
+              {gameMode === 'standard' && (
+                <>
+                  <li>• Success: Open vault → draw Challenge card</li>
+                  <li>• Failure: Trigger alarm → draw Specialist card</li>
+                  <li>• One card at a time, {randomizeCards ? 'random order' : 'sequential'}</li>
+                </>
+              )}
+              {gameMode === 'neverending' && (
+                <>
+                  <li>• Success: Open vault → add Challenge card</li>
+                  <li>• Failure: Trigger alarm → {specialistCardsEnabled ? 'add Specialist card' : 'no card (hard mode!)'}</li>
+                  <li>• Multiple random cards, no duplicates</li>
+                  <li>• Play until you lose!</li>
+                </>
+              )}
+              {gameMode === 'professional' && (
+                <>
+                  <li>• One permanent Challenge card throughout game</li>
+                  <li>• Success: Open vault → may add another Challenge</li>
+                  <li>• Failure: Trigger alarm → draw Specialist card</li>
+                  <li>• Win at 3 vaults, lose at 3 alarms</li>
+                </>
+              )}
+              {gameMode === 'master-thief' && (
+                <>
+                  <li>• Always 2 Challenge cards active</li>
+                  <li>• Each heist: discard lowest, draw new Challenge</li>
+                  <li>• No Specialist cards available</li>
+                  <li>• Win at 3 vaults, lose at 2 alarms!</li>
+                </>
+              )}
             </ul>
           </div>
         </div>

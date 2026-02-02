@@ -25,7 +25,7 @@ export default function VaultTracker({
         <span>🔓</span> Vaults
       </h2>
 
-      {gameMode === 'standard' ? (
+      {gameMode === 'standard' || gameMode === 'professional' || gameMode === 'master-thief' ? (
         <div>
           <div className="flex gap-4 mb-4">
             {[1, 2, 3].map((vault) => (

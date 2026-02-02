@@ -78,12 +78,36 @@ export function useGameState() {
     specialistCardsEnabled: boolean = true,
     randomizeCards: boolean = false
   ) => {
+    // Get available challenge cards (excluding Quick Access for professional and master-thief modes)
+    const availableChallenges = (gameMode === 'professional' || gameMode === 'master-thief')
+      ? challengeCards.filter(card => card.id !== 1)
+      : challengeCards;
+
+    let initialChallenges: Card[] = [];
+
+    // Set up initial challenge cards based on mode
+    if (gameMode === 'professional') {
+      // Professional: start with one random challenge card that stays active
+      const randomCard = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+      initialChallenges = [randomCard];
+    } else if (gameMode === 'master-thief') {
+      // Master Thief: start with two random challenge cards
+      const firstCard = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+      let secondCard = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+      // Make sure second card is different from first
+      while (secondCard.id === firstCard.id) {
+        secondCard = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+      }
+      initialChallenges = [firstCard, secondCard];
+    }
+
     setGameState({
       ...initialState,
       gameMode,
-      specialistCardsEnabled,
+      specialistCardsEnabled: gameMode === 'master-thief' ? false : specialistCardsEnabled,
       randomizeCards,
       gameStarted: true,
+      activeChallenges: initialChallenges,
     });
   };
 
@@ -115,6 +139,33 @@ export function useGameState() {
           vaultsOpened: prev.vaultsOpened + 1,
           challengeDeckPosition: newPosition,
           activeChallenges: [newCard], // Replace with single card
+        };
+      } else if (prev.gameMode === 'professional') {
+        // Professional mode: permanent first card, add more challenges from second heist on
+        const availableChallenges = challengeCards.filter(card => card.id !== 1);
+        const newCard = getRandomUniqueCard(availableChallenges, prev.activeChallenges);
+
+        return {
+          ...prev,
+          vaultsOpened: prev.vaultsOpened + 1,
+          activeChallenges: [...prev.activeChallenges, newCard],
+        };
+      } else if (prev.gameMode === 'master-thief') {
+        // Master Thief mode: always 2 cards, discard lowest-numbered and add new one
+        const availableChallenges = challengeCards.filter(card => card.id !== 1);
+
+        // Find the lowest-numbered challenge card
+        const sortedChallenges = [...prev.activeChallenges].sort((a, b) => a.id - b.id);
+        const lowestCard = sortedChallenges[0];
+
+        // Remove the lowest card and get a new unique card
+        const remainingChallenges = prev.activeChallenges.filter(card => card.id !== lowestCard.id);
+        const newCard = getRandomUniqueCard(availableChallenges, prev.activeChallenges);
+
+        return {
+          ...prev,
+          vaultsOpened: prev.vaultsOpened + 1,
+          activeChallenges: [...remainingChallenges, newCard],
         };
       } else {
         // Never ending mode: random cards, multiple allowed, no duplicates
@@ -272,8 +323,8 @@ export function useGameState() {
     });
   };
 
-  const isGameWon = gameState.gameMode === 'standard' && gameState.vaultsOpened >= 3;
-  const isGameLost = gameState.alarmsTriggered >= 3;
+  const isGameWon = (gameState.gameMode === 'standard' || gameState.gameMode === 'professional' || gameState.gameMode === 'master-thief') && gameState.vaultsOpened >= 3;
+  const isGameLost = gameState.gameMode === 'master-thief' ? gameState.alarmsTriggered >= 2 : gameState.alarmsTriggered >= 3;
 
   return {
     gameState,

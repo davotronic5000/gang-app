@@ -1,10 +1,13 @@
 'use client';
 
+import { GameMode } from '@/types/game';
+
 interface AlarmTrackerProps {
   alarmsTriggered: number;
   onTriggerAlarm: () => void;
   isGameLost: boolean;
   specialistCardsEnabled?: boolean;
+  gameMode?: GameMode;
 }
 
 export default function AlarmTracker({
@@ -12,7 +15,9 @@ export default function AlarmTracker({
   onTriggerAlarm,
   isGameLost,
   specialistCardsEnabled = true,
+  gameMode = 'standard',
 }: AlarmTrackerProps) {
+  const maxAlarms = gameMode === 'master-thief' ? 2 : 3;
   const getAlarmColor = () => {
     if (alarmsTriggered === 0) return 'from-neutral-800/30 to-neutral-900/20 border-neutral-700/30';
     if (alarmsTriggered === 1) return 'from-amber-500/10 to-orange-600/10 border-amber-500/30';
@@ -32,7 +37,7 @@ export default function AlarmTracker({
       </h2>
 
       <div className="flex gap-4 mb-4">
-        {[1, 2, 3].map((alarm) => (
+        {Array.from({ length: maxAlarms }, (_, i) => i + 1).map((alarm) => (
           <div
             key={alarm}
             className={`flex-1 aspect-square rounded-lg flex items-center justify-center text-4xl transition-all ${
@@ -47,10 +52,10 @@ export default function AlarmTracker({
       </div>
 
       <div className="text-center text-amber-100 mb-4">
-        <span className={`text-3xl font-bold ${alarmsTriggered >= 2 ? 'text-red-400' : ''}`}>
+        <span className={`text-3xl font-bold ${alarmsTriggered >= maxAlarms - 1 ? 'text-red-400' : ''}`}>
           {alarmsTriggered}
         </span>
-        <span className="text-xl opacity-75"> / 3</span>
+        <span className="text-xl opacity-75"> / {maxAlarms}</span>
       </div>
 
       <button
@@ -59,7 +64,7 @@ export default function AlarmTracker({
         className={`w-full py-3 rounded-lg font-semibold transition-all ${
           isGameLost
             ? 'bg-gray-500/50 text-gray-300 cursor-not-allowed'
-            : alarmsTriggered >= 2
+            : alarmsTriggered >= maxAlarms - 1
             ? 'bg-gradient-to-r from-red-500 to-red-700 text-white hover:from-red-600 hover:to-red-800 shadow-lg shadow-red-500/30 hover:shadow-xl'
             : 'bg-gradient-to-r from-red-500/80 to-red-600/80 text-white hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/20 hover:shadow-xl'
         }`}

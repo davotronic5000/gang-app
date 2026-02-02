@@ -53,6 +53,8 @@ export default function GameControls({
           <p className="text-white/90">
             {gameMode === 'neverending'
               ? `The alarms caught you! Final score: ${vaultsOpened} vaults`
+              : gameMode === 'master-thief'
+              ? 'You triggered 2 alarms before cracking all vaults.'
               : 'You triggered 3 alarms before cracking all vaults.'}
           </p>
         </div>

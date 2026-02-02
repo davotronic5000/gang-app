@@ -5,7 +5,7 @@ export interface Card {
   description: string;
 }
 
-export type GameMode = 'standard' | 'neverending';
+export type GameMode = 'standard' | 'neverending' | 'professional' | 'master-thief';
 
 export interface GameState {
   gameMode: GameMode;
