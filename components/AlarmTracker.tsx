@@ -4,12 +4,14 @@ interface AlarmTrackerProps {
   alarmsTriggered: number;
   onTriggerAlarm: () => void;
   isGameLost: boolean;
+  specialistCardsEnabled?: boolean;
 }
 
 export default function AlarmTracker({
   alarmsTriggered,
   onTriggerAlarm,
   isGameLost,
+  specialistCardsEnabled = true,
 }: AlarmTrackerProps) {
   const getAlarmColor = () => {
     if (alarmsTriggered === 0) return 'from-neutral-800/30 to-neutral-900/20 border-neutral-700/30';
@@ -22,6 +24,11 @@ export default function AlarmTracker({
     <div className={`bg-gradient-to-br ${getAlarmColor()} backdrop-blur-sm rounded-xl p-6 border`}>
       <h2 className="text-2xl font-bold text-amber-100 mb-4 flex items-center gap-2">
         <span>🔔</span> Alarms
+        {!specialistCardsEnabled && (
+          <span className="text-sm bg-gradient-to-r from-red-500 to-red-700 text-white px-2 py-1 rounded-full">
+            🔥 HARD
+          </span>
+        )}
       </h2>
 
       <div className="flex gap-4 mb-4">

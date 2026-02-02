@@ -60,6 +60,7 @@ export default function GameBoard({
               alarmsTriggered={gameState.alarmsTriggered}
               onTriggerAlarm={onTriggerAlarm}
               isGameLost={isGameLost}
+              specialistCardsEnabled={gameState.specialistCardsEnabled}
             />
           </div>
 

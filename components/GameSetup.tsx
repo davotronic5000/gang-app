@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { GameMode } from '@/types/game';
 
 interface GameSetupProps {
-  onStartGame: (gameMode: GameMode) => void;
+  onStartGame: (gameMode: GameMode, specialistCardsEnabled: boolean, randomizeCards: boolean) => void;
 }
 
 export default function GameSetup({ onStartGame }: GameSetupProps) {
   const [gameMode, setGameMode] = useState<GameMode>('standard');
+  const [specialistCardsEnabled, setSpecialistCardsEnabled] = useState(true);
+  const [randomizeCards, setRandomizeCards] = useState(false);
 
   const handleStart = () => {
-    onStartGame(gameMode);
+    onStartGame(gameMode, specialistCardsEnabled, randomizeCards);
   };
 
   return (
@@ -50,11 +52,73 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
               >
                 <div className="font-semibold">Never Ending Mode</div>
                 <div className="text-sm opacity-90">
-                  Unlimited vaults | Lose: 3 alarms
+                  Unlimited vaults | Random cards stack
                 </div>
               </button>
             </div>
           </div>
+
+          {/* Card Randomization Toggle (only for standard mode) */}
+          {gameMode === 'standard' && (
+            <div>
+              <label className="block text-amber-100 font-semibold mb-3">Card Order</label>
+              <button
+                onClick={() => setRandomizeCards(!randomizeCards)}
+                className={`w-full p-4 rounded-lg text-left transition-all ${
+                  randomizeCards
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-lg shadow-amber-500/50'
+                    : 'bg-white/10 text-amber-100 hover:bg-white/20 border border-amber-500/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold">
+                      {randomizeCards ? 'Random Cards' : 'Sequential Cards'}
+                    </div>
+                    <div className="text-sm opacity-90">
+                      {randomizeCards
+                        ? 'Cards drawn randomly'
+                        : 'Cards drawn in order (1, 2, 3...)'}
+                    </div>
+                  </div>
+                  <div className="text-2xl">
+                    {randomizeCards ? '🎲' : '🔢'}
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Specialist Cards Toggle (only for never ending mode) */}
+          {gameMode === 'neverending' && (
+            <div>
+              <label className="block text-amber-100 font-semibold mb-3">Difficulty</label>
+              <button
+                onClick={() => setSpecialistCardsEnabled(!specialistCardsEnabled)}
+                className={`w-full p-4 rounded-lg text-left transition-all ${
+                  specialistCardsEnabled
+                    ? 'bg-white/10 text-amber-100 hover:bg-white/20 border border-amber-500/20'
+                    : 'bg-gradient-to-r from-red-500 to-red-700 text-white shadow-lg shadow-red-500/50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold">
+                      {specialistCardsEnabled ? 'Normal' : 'Hard Mode'}
+                    </div>
+                    <div className="text-sm opacity-90">
+                      {specialistCardsEnabled
+                        ? 'Specialist cards enabled'
+                        : 'No specialist cards (harder!)'}
+                    </div>
+                  </div>
+                  <div className="text-2xl">
+                    {specialistCardsEnabled ? '✓' : '🔥'}
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
 
           {/* Start Button */}
           <button
@@ -69,10 +133,11 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
             <h3 className="text-amber-100 font-semibold mb-2">How to Play</h3>
             <ul className="text-sm text-amber-200/70 space-y-1">
               <li>• Success: Open a vault → draw Challenge card</li>
-              <li>• Failure: Trigger alarm → draw Specialist card</li>
+              <li>• Failure: Trigger alarm → {specialistCardsEnabled || gameMode === 'standard' ? 'draw Specialist card' : 'no card (hard mode!)'}</li>
               <li>• Challenge cards add difficulty</li>
               <li>• Specialist cards provide help</li>
-              <li>• Multiple cards can be active at once</li>
+              <li>• Standard: One card at a time, {randomizeCards ? 'random order' : 'sequential'}</li>
+              <li>• Never Ending: Multiple random cards, no duplicates</li>
             </ul>
           </div>
         </div>

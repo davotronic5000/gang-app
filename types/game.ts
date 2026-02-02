@@ -15,5 +15,7 @@ export interface GameState {
   activeSpecialists: Card[];
   challengeDeckPosition: number;
   specialistDeckPosition: number;
+  specialistCardsEnabled: boolean;
+  randomizeCards: boolean;
   gameStarted: boolean;
 }
