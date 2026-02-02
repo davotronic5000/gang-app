@@ -41,6 +41,11 @@ function getRandomUniqueCard(
 export function useGameState() {
   // Load from localStorage on mount using lazy initializer
   const [gameState, setGameState] = useState<GameState>(() => {
+    // Check if we're in the browser before accessing localStorage
+    if (typeof window === 'undefined') {
+      return initialState;
+    }
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
@@ -63,7 +68,7 @@ export function useGameState() {
 
   // Save to localStorage on state change
   useEffect(() => {
-    if (gameState.gameStarted) {
+    if (typeof window !== 'undefined' && gameState.gameStarted) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
     }
   }, [gameState]);
@@ -84,7 +89,9 @@ export function useGameState() {
 
   const resetGame = () => {
     setGameState(initialState);
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   };
 
   const openVault = () => {
