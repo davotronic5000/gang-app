@@ -1,26 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/types/game';
+import { Card, GameMode } from '@/types/game';
 import { challengeCards, specialistCards } from '@/data/cards';
 
 interface CardLibraryProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectCard: (card: Card) => void;
+  gameMode?: GameMode;
 }
 
 export default function CardLibrary({
   isOpen,
   onClose,
   onSelectCard,
+  gameMode = 'standard',
 }: CardLibraryProps) {
   const [activeTab, setActiveTab] = useState<'challenge' | 'specialist'>('challenge');
   const [searchTerm, setSearchTerm] = useState('');
 
   if (!isOpen) return null;
 
-  const currentCards = activeTab === 'challenge' ? challengeCards : specialistCards;
+  // Filter out Quick Access (card #1) for professional and master-thief modes
+  const availableChallengeCards = (gameMode === 'professional' || gameMode === 'master-thief')
+    ? challengeCards.filter(card => card.id !== 1)
+    : challengeCards;
+
+  const currentCards = activeTab === 'challenge' ? availableChallengeCards : specialistCards;
   const filteredCards = currentCards.filter(
     (card) =>
       card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,7 +74,7 @@ export default function CardLibrary({
                 : 'text-amber-200/60 hover:text-amber-200/80'
             }`}
           >
-            Challenge Cards ({challengeCards.length})
+            Challenge Cards ({availableChallengeCards.length})
           </button>
           <button
             onClick={() => setActiveTab('specialist')}

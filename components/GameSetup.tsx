@@ -78,18 +78,20 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
               >
                 <div className="font-semibold">Master Thief Mode</div>
                 <div className="text-sm opacity-90">
-                  Win: 3 vaults | Lose: 2 alarms | No specialists
+                  3 challenges (2 locked) | Lose: 2 alarms
                 </div>
               </button>
             </div>
           </div>
 
-          {/* Card Randomization Toggle (only for standard mode) */}
-          {gameMode === 'standard' && (
-            <div>
+          {/* Mode-Specific Options - Fixed height container to prevent jumping */}
+          <div className="h-32">
+            {/* Card Randomization Toggle (only for standard mode) */}
+            <div className={`transition-opacity duration-200 ${gameMode === 'standard' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}>
               <label className="block text-amber-100 font-semibold mb-3">Card Order</label>
               <button
                 onClick={() => setRandomizeCards(!randomizeCards)}
+                disabled={gameMode !== 'standard'}
                 className={`w-full p-4 rounded-lg text-left transition-all ${
                   randomizeCards
                     ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black shadow-lg shadow-amber-500/50'
@@ -113,14 +115,13 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
                 </div>
               </button>
             </div>
-          )}
 
-          {/* Specialist Cards Toggle (only for never ending mode) */}
-          {gameMode === 'neverending' && (
-            <div>
+            {/* Specialist Cards Toggle (only for never ending mode) */}
+            <div className={`transition-opacity duration-200 ${gameMode === 'neverending' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}>
               <label className="block text-amber-100 font-semibold mb-3">Difficulty</label>
               <button
                 onClick={() => setSpecialistCardsEnabled(!specialistCardsEnabled)}
+                disabled={gameMode !== 'neverending'}
                 className={`w-full p-4 rounded-lg text-left transition-all ${
                   specialistCardsEnabled
                     ? 'bg-white/10 text-amber-100 hover:bg-white/20 border border-amber-500/20'
@@ -144,7 +145,7 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
                 </div>
               </button>
             </div>
-          )}
+          </div>
 
           {/* Start Button */}
           <button
@@ -175,16 +176,16 @@ export default function GameSetup({ onStartGame }: GameSetupProps) {
               )}
               {gameMode === 'professional' && (
                 <>
-                  <li>• One permanent Challenge card throughout game</li>
-                  <li>• Success: Open vault → may add another Challenge</li>
-                  <li>• Failure: Trigger alarm → draw Specialist card</li>
+                  <li>• One permanent Challenge card (locked for whole game)</li>
+                  <li>• Success: Open vault → draw second Challenge (replaces previous)</li>
+                  <li>• Failure: Trigger alarm → draw Specialist (one at a time)</li>
                   <li>• Win at 3 vaults, lose at 3 alarms</li>
                 </>
               )}
               {gameMode === 'master-thief' && (
                 <>
-                  <li>• Always 2 Challenge cards active</li>
-                  <li>• Each heist: discard lowest, draw new Challenge</li>
+                  <li>• Start with 2 locked Challenge cards</li>
+                  <li>• Success: Add 3rd Challenge (then replace it each time)</li>
                   <li>• No Specialist cards available</li>
                   <li>• Win at 3 vaults, lose at 2 alarms!</li>
                 </>

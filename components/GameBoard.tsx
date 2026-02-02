@@ -90,6 +90,7 @@ export default function GameBoard({
         isOpen={isLibraryOpen}
         onClose={() => setIsLibraryOpen(false)}
         onSelectCard={onSetActiveCard}
+        gameMode={gameState.gameMode}
       />
     </div>
   );
